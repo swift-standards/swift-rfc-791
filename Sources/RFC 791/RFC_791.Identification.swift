@@ -85,12 +85,24 @@ extension RFC_791.Identification {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Identification: UInt8.Serializable {
-    /// Serialize to a byte buffer (big-endian)
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(UInt8(rawValue >> 8))
-        buffer.append(UInt8(rawValue & 0xFF))
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+}
+
+// MARK: - [UInt8] Conversion
+
+extension [UInt8] {
+    /// Creates byte representation of an Identification field (big-endian)
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.Identification → [UInt8]
+    ///
+    /// - Parameter identification: The Identification value to serialize
+    public init(_ identification: RFC_791.Identification) {
+        self = [
+            UInt8(identification.rawValue >> 8),
+            UInt8(identification.rawValue & 0xFF),
+        ]
     }
 }
 

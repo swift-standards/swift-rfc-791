@@ -152,8 +152,11 @@ struct TotalLengthTests {
 
     @Test("Error descriptions")
     func errorDescriptions() {
-        #expect(RFC_791.TotalLength.Error.empty.description == "TotalLength data cannot be empty")
-        #expect(RFC_791.TotalLength.Error.insufficientBytes.description == "TotalLength requires 2 bytes")
-        #expect(RFC_791.TotalLength.Error.tooSmall(10).description == "TotalLength 10 is less than minimum header size of 20")
+        let emptyDesc = RFC_791.TotalLength.Error.empty.description
+        #expect(emptyDesc == "TotalLength data cannot be empty")
+        let insufficientDesc = RFC_791.TotalLength.Error.insufficientBytes.description
+        #expect(insufficientDesc == "TotalLength requires 2 bytes")
+        let tooSmallDesc = RFC_791.TotalLength.Error.tooSmall(10).description
+        #expect(tooSmallDesc == "TotalLength 10 is less than minimum header size of 20")
     }
 }

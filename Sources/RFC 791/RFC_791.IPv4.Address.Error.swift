@@ -55,10 +55,11 @@ extension RFC_791.IPv4.Address.Error: CustomStringConvertible {
             return "IPv4 address cannot be empty"
 
         case .invalidFormat(let value):
-            return "Invalid IPv4 address format '\(value)': expected dotted-decimal notation (e.g., 192.168.1.1)"
+            return "Invalid IPv4 address format '\(value)': expected dotted-decimal"
 
         case .invalidCharacter(let value, let byte, let position):
-            return "Invalid character 0x\(String(byte, radix: 16, uppercase: true)) in octet \(position + 1) of '\(value)'"
+            let hex = String(byte, radix: 16, uppercase: true)
+            return "Invalid character 0x\(hex) in octet \(position + 1) of '\(value)'"
 
         case .octetOutOfRange(let value, let position):
             return "Octet \(position + 1) value \(value) is out of range (must be 0-255)"

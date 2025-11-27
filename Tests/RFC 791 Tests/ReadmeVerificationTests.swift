@@ -64,7 +64,7 @@ struct ReadmeVerificationTests {
         let addr1: RFC_791.IPv4.Address = "10.0.0.1"
 
         // From raw 32-bit value
-        let addr2 = RFC_791.IPv4.Address(rawValue: 0xC0A80001)  // 192.168.0.1
+        let addr2 = RFC_791.IPv4.Address(rawValue: 0xC0A8_0001)  // 192.168.0.1
 
         // From individual octets
         let addr3 = RFC_791.IPv4.Address(127, 0, 0, 1)
@@ -99,7 +99,7 @@ struct ReadmeVerificationTests {
     func ipv4SpecialAddresses() {
         // Special addresses
         #expect(RFC_791.IPv4.Address.any.rawValue == 0)  // 0.0.0.0
-        #expect(RFC_791.IPv4.Address.broadcast.rawValue == 0xFFFFFFFF)  // 255.255.255.255
+        #expect(RFC_791.IPv4.Address.broadcast.rawValue == 0xFFFF_FFFF)  // 255.255.255.255
         #expect(RFC_791.IPv4.Address.loopback.octets == (127, 0, 0, 1))
     }
 
@@ -115,7 +115,7 @@ struct ReadmeVerificationTests {
     @Test("Header Fields - IHL")
     func headerFieldIHL() {
         // Internet Header Length (4-bit, in 32-bit words)
-        let ihl = RFC_791.IHL.minimum       // 5 (20 bytes, no options)
+        let ihl = RFC_791.IHL.minimum  // 5 (20 bytes, no options)
         #expect(ihl.byteLength == 20)
         #expect(ihl.hasOptions == false)
     }

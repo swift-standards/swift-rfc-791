@@ -135,15 +135,27 @@ extension RFC_791.FragmentOffset {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.FragmentOffset: UInt8.Serializable {
-    /// Serialize to a byte buffer (big-endian, lower 13 bits only)
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+}
+
+// MARK: - [UInt8] Conversion
+
+extension [UInt8] {
+    /// Creates byte representation of a FragmentOffset field (big-endian, lower 13 bits only)
     ///
     /// Note: This only serializes the offset portion. The flags must be
     /// combined separately when building a complete header.
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(UInt8((rawValue >> 8) & 0x1F))  // Upper 5 bits of offset
-        buffer.append(UInt8(rawValue & 0xFF))         // Lower 8 bits of offset
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.FragmentOffset → [UInt8]
+    ///
+    /// - Parameter fragmentOffset: The FragmentOffset value to serialize
+    public init(_ fragmentOffset: RFC_791.FragmentOffset) {
+        self = [
+            UInt8((fragmentOffset.rawValue >> 8) & 0x1F),  // Upper 5 bits of offset
+            UInt8(fragmentOffset.rawValue & 0xFF),  // Lower 8 bits of offset
+        ]
     }
 }
 

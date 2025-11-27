@@ -121,7 +121,9 @@ struct IdentificationTests {
 
     @Test("Error descriptions")
     func errorDescriptions() {
-        #expect(RFC_791.Identification.Error.empty.description == "Identification data cannot be empty")
-        #expect(RFC_791.Identification.Error.insufficientBytes.description == "Identification requires 2 bytes")
+        let emptyDesc = RFC_791.Identification.Error.empty.description
+        #expect(emptyDesc == "Identification data cannot be empty")
+        let insufficientDesc = RFC_791.Identification.Error.insufficientBytes.description
+        #expect(insufficientDesc == "Identification requires 2 bytes")
     }
 }

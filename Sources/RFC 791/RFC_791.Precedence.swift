@@ -156,14 +156,7 @@ extension RFC_791.Precedence {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Precedence: UInt8.Serializable {
-    /// Serialize to a byte buffer
-    ///
-    /// Writes the raw precedence value to the buffer.
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(rawValue)
-    }
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
 }
 
 // MARK: - CustomStringConvertible
@@ -189,5 +182,22 @@ extension RFC_791.Precedence: CustomStringConvertible {
 extension RFC_791.Precedence: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.rawValue < rhs.rawValue
+    }
+}
+
+// MARK: - [UInt8] Conversion
+
+extension [UInt8] {
+    /// Creates byte representation of a Precedence value
+    ///
+    /// Writes the raw precedence value.
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.Precedence → [UInt8]
+    ///
+    /// - Parameter precedence: The Precedence value to serialize
+    public init(_ precedence: RFC_791.Precedence) {
+        self = [precedence.rawValue]
     }
 }

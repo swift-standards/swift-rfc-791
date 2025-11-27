@@ -33,7 +33,8 @@ extension RFC_791.Flags.Error: CustomStringConvertible {
             return "IP Flags data cannot be empty"
 
         case .reservedBitSet(let value):
-            return "IP Flags value 0x\(String(value, radix: 16, uppercase: true)) has reserved bit set (bit 0 must be zero)"
+            let hex = String(value, radix: 16, uppercase: true)
+            return "IP Flags value 0x\(hex) has reserved bit set (bit 0 must be zero)"
         }
     }
 }

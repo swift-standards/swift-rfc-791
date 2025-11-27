@@ -55,8 +55,8 @@ struct IPv4AddressClassTests {
         let addr192 = RFC_791.IPv4.Address(192, 0, 0, 1)
         #expect(addr192.addressClass == .classC)
 
-        let addr192_168 = RFC_791.IPv4.Address(192, 168, 1, 1)
-        #expect(addr192_168.addressClass == .classC)
+        let addr192x168 = RFC_791.IPv4.Address(192, 168, 1, 1)
+        #expect(addr192x168.addressClass == .classC)
 
         let addr223 = RFC_791.IPv4.Address(223, 255, 255, 255)
         #expect(addr223.addressClass == .classC)

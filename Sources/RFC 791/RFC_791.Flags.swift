@@ -180,14 +180,7 @@ extension RFC_791.Flags {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Flags: UInt8.Serializable {
-    /// Serialize to a byte buffer
-    ///
-    /// Writes the flags as a single byte with flags in upper 3 bits.
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(rawValue << 5)
-    }
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
 }
 
 // MARK: - CustomStringConvertible
@@ -202,5 +195,22 @@ extension RFC_791.Flags: CustomStringConvertible {
             return "Flags(none)"
         }
         return "Flags(\(flags.joined(separator: ", ")))"
+    }
+}
+
+// MARK: - [UInt8] Conversion
+
+extension [UInt8] {
+    /// Creates byte representation of IP Flags
+    ///
+    /// Writes the flags as a single byte with flags in upper 3 bits.
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.Flags → [UInt8]
+    ///
+    /// - Parameter flags: The Flags value to serialize
+    public init(_ flags: RFC_791.Flags) {
+        self = [flags.rawValue << 5]
     }
 }

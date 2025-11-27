@@ -171,6 +171,7 @@ struct IHLTests {
     @Test("Error descriptions")
     func errorDescriptions() {
         #expect(RFC_791.IHL.Error.empty.description == "IHL data cannot be empty")
-        #expect(RFC_791.IHL.Error.tooSmall(3).description == "IHL value 3 is too small (minimum is 5)")
+        let tooSmallDesc = RFC_791.IHL.Error.tooSmall(3).description
+        #expect(tooSmallDesc == "IHL value 3 is too small (minimum is 5)")
     }
 }

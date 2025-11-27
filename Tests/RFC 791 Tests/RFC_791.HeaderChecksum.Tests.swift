@@ -164,7 +164,9 @@ struct HeaderChecksumTests {
 
     @Test("Error descriptions")
     func errorDescriptions() {
-        #expect(RFC_791.HeaderChecksum.Error.empty.description == "HeaderChecksum data cannot be empty")
-        #expect(RFC_791.HeaderChecksum.Error.insufficientBytes.description == "HeaderChecksum requires 2 bytes")
+        let emptyDesc = RFC_791.HeaderChecksum.Error.empty.description
+        #expect(emptyDesc == "HeaderChecksum data cannot be empty")
+        let insufficientDesc = RFC_791.HeaderChecksum.Error.insufficientBytes.description
+        #expect(insufficientDesc == "HeaderChecksum requires 2 bytes")
     }
 }

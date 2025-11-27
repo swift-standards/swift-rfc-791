@@ -78,7 +78,8 @@ extension RFC_791.IPv4.Address {
     /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
     /// ```
     public init(_ octet1: UInt8, _ octet2: UInt8, _ octet3: UInt8, _ octet4: UInt8) {
-        let value = UInt32(octet1) << 24
+        let value =
+            UInt32(octet1) << 24
             | UInt32(octet2) << 16
             | UInt32(octet3) << 8
             | UInt32(octet4)
@@ -211,6 +212,85 @@ extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
         }
 
         self.init(octets[0], octets[1], octets[2], octets[3])
+    }
+}
+
+extension [UInt8] {
+    /// Creates ASCII byte representation of an IPv4 address (RFC 791 dotted-decimal notation)
+    ///
+    /// This is the canonical serialization of IPv4 addresses to bytes.
+    /// The format is defined by RFC 791 as dotted-decimal notation:
+    /// ```
+    /// <decimal>.<decimal>.<decimal>.<decimal>
+    /// ```
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.IPv4.Address → [UInt8]
+    /// ```
+    /// IPv4.Address → [UInt8] (ASCII) → String (UTF-8)
+    /// ```
+    ///
+    /// ## Performance
+    ///
+    /// Direct ASCII generation without intermediate String allocations:
+    /// - Pre-allocated capacity (15 bytes max: "255.255.255.255")
+    /// - ASCII digit computation via division/modulo
+    /// - No string interpolation overhead
+    ///
+    /// ## Example
+    ///
+    /// ```swift
+    /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
+    /// let bytes = [UInt8](address)
+    /// // bytes == [49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 49]
+    /// // ASCII:     '1' '9' '2' '.' '1' '6' '8' '.' '1' '.' '1'
+    /// ```
+    ///
+    /// - Parameter address: The IPv4 address to serialize
+    public init(_ address: RFC_791.IPv4.Address) {
+        let (a, b, c, d) = address.octets
+
+        // Maximum length: "255.255.255.255" = 15 bytes
+        self = []
+        self.reserveCapacity(15)
+
+        // Helper to append decimal ASCII digits for a UInt8
+        func appendDecimal(_ value: UInt8) {
+            // Fast path for single digit (0-9)
+            if value < 10 {
+                self.append(UInt8.ascii.`0` + value)
+                return
+            }
+
+            // Fast path for two digits (10-99)
+            if value < 100 {
+                let tens = value / 10
+                let ones = value % 10
+                self.append(UInt8.ascii.`0` + tens)
+                self.append(UInt8.ascii.`0` + ones)
+                return
+            }
+
+            // Three digits (100-255)
+            let hundreds = value / 100
+            let remainder = value % 100
+            let tens = remainder / 10
+            let ones = remainder % 10
+
+            self.append(UInt8.ascii.`0` + hundreds)
+            self.append(UInt8.ascii.`0` + tens)
+            self.append(UInt8.ascii.`0` + ones)
+        }
+
+        // Serialize: <a>.<b>.<c>.<d>
+        appendDecimal(a)
+        self.append(UInt8.ascii.period)
+        appendDecimal(b)
+        self.append(UInt8.ascii.period)
+        appendDecimal(c)
+        self.append(UInt8.ascii.period)
+        appendDecimal(d)
     }
 }
 

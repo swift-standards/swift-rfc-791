@@ -18,14 +18,14 @@ let package = Package(
         .macOS(.v15),
         .iOS(.v18),
         .tvOS(.v18),
-        .watchOS(.v11)
+        .watchOS(.v11),
     ],
     products: [
-        .library(name: .rfc791, targets: [.rfc791]),
+        .library(name: .rfc791, targets: [.rfc791])
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-standards/swift-standards", from: "0.4.0"),
-        .package(url: "https://github.com/swift-standards/swift-incits-4-1986", from: "0.4.1"),
+        .package(url: "https://github.com/swift-standards/swift-standards", from: "0.5.0"),
+        .package(url: "https://github.com/swift-standards/swift-incits-4-1986", from: "0.5.0"),
     ],
     targets: [
         .target(

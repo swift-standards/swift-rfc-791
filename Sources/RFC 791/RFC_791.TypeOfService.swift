@@ -198,13 +198,19 @@ extension RFC_791.TypeOfService {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.TypeOfService: UInt8.Serializable {
-    /// Serialize to a byte buffer
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+}
+
+extension [UInt8] {
+    /// Creates byte representation of a Type of Service field
     ///
-    /// Writes the raw TOS byte to the buffer.
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(rawValue)
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.TypeOfService → [UInt8]
+    ///
+    /// - Parameter tos: The Type of Service value to serialize
+    public init(_ tos: RFC_791.TypeOfService) {
+        self = [tos.rawValue]
     }
 }
 

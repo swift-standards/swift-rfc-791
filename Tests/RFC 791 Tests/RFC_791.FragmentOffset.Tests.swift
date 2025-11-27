@@ -75,8 +75,8 @@ struct FragmentOffsetTests {
 
     @Test("Create from invalid byte offset")
     func createFromInvalidByteOffset() {
-        #expect(RFC_791.FragmentOffset.fromByteOffset(-1) == nil)     // Negative
-        #expect(RFC_791.FragmentOffset.fromByteOffset(7) == nil)      // Not divisible by 8
+        #expect(RFC_791.FragmentOffset.fromByteOffset(-1) == nil)  // Negative
+        #expect(RFC_791.FragmentOffset.fromByteOffset(7) == nil)  // Not divisible by 8
         #expect(RFC_791.FragmentOffset.fromByteOffset(65536) == nil)  // Too large
     }
 
@@ -151,8 +151,10 @@ struct FragmentOffsetTests {
 
     @Test("Description format")
     func descriptionFormat() {
-        #expect(RFC_791.FragmentOffset(rawValue: 0)?.description == "FragmentOffset(0 = 0 bytes)")
-        #expect(RFC_791.FragmentOffset(rawValue: 185)?.description == "FragmentOffset(185 = 1480 bytes)")
+        let zeroDesc = RFC_791.FragmentOffset(rawValue: 0)?.description
+        #expect(zeroDesc == "FragmentOffset(0 = 0 bytes)")
+        let offset185Desc = RFC_791.FragmentOffset(rawValue: 185)?.description
+        #expect(offset185Desc == "FragmentOffset(185 = 1480 bytes)")
     }
 
     // MARK: - Comparable
@@ -167,7 +169,9 @@ struct FragmentOffsetTests {
 
     @Test("Error descriptions")
     func errorDescriptions() {
-        #expect(RFC_791.FragmentOffset.Error.empty.description == "FragmentOffset data cannot be empty")
-        #expect(RFC_791.FragmentOffset.Error.insufficientBytes.description == "FragmentOffset requires 2 bytes")
+        let emptyDesc = RFC_791.FragmentOffset.Error.empty.description
+        #expect(emptyDesc == "FragmentOffset data cannot be empty")
+        let insufficientDesc = RFC_791.FragmentOffset.Error.insufficientBytes.description
+        #expect(insufficientDesc == "FragmentOffset requires 2 bytes")
     }
 }

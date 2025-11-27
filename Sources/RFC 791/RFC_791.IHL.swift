@@ -141,13 +141,23 @@ extension RFC_791.IHL {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.IHL: UInt8.Serializable {
-    /// Serialize to a byte buffer
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+}
+
+// MARK: - [UInt8] Conversion
+
+extension [UInt8] {
+    /// Creates byte representation of an IHL field
     ///
     /// Writes the IHL in the lower 4 bits.
-    public func serialize<Buffer: RangeReplaceableCollection>(
-        into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(rawValue)
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.IHL → [UInt8]
+    ///
+    /// - Parameter ihl: The IHL value to serialize
+    public init(_ ihl: RFC_791.IHL) {
+        self = [ihl.rawValue]
     }
 }
 

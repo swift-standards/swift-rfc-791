@@ -10,6 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
+import Foundation
 import Testing
 
 @testable import RFC_791
@@ -184,20 +185,5 @@ struct ProtocolTests {
         let decoded = try decoder.decode(IPProtocol.self, from: data)
 
         #expect(decoded == original)
-    }
-}
-
-// Helper for JSON encoding/decoding in tests
-import Foundation
-
-private struct JSONEncoder {
-    func encode<T: Encodable>(_ value: T) throws -> Data {
-        try Foundation.JSONEncoder().encode(value)
-    }
-}
-
-private struct JSONDecoder {
-    func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
-        try Foundation.JSONDecoder().decode(type, from: data)
     }
 }
