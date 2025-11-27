@@ -80,10 +80,7 @@ extension RFC_791.IPv4.Address {
     /// ```
     public init(_ octet1: UInt8, _ octet2: UInt8, _ octet3: UInt8, _ octet4: UInt8) {
         self.rawValue =
-            UInt32(octet1) << 24 |
-            UInt32(octet2) << 16 |
-            UInt32(octet3) << 8 |
-            UInt32(octet4)
+            UInt32(octet1) << 24 | UInt32(octet2) << 16 | UInt32(octet3) << 8 | UInt32(octet4)
     }
 }
 

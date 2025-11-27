@@ -11,6 +11,7 @@
 // ===----------------------------------------------------------------------===//
 
 import Testing
+
 @testable import RFC_791
 
 @Suite("RFC 791: IPv4 Address Tests")
@@ -31,7 +32,7 @@ struct IPv4AddressTests {
     @Test("IPv4 Address from raw value")
     func initFromRawValue() throws {
         // 192.168.1.1 = 0xC0A80101
-        let address = RFC_791.IPv4.Address(rawValue: 0xC0A80101)
+        let address = RFC_791.IPv4.Address(rawValue: 0xC0A8_0101)
 
         let (a, b, c, d) = address.octets
         #expect(a == 192)
@@ -58,7 +59,7 @@ struct IPv4AddressTests {
 
         // All 255s
         let broadcast = try RFC_791.IPv4.Address("255.255.255.255")
-        #expect(broadcast.rawValue == 0xFFFFFFFF)
+        #expect(broadcast.rawValue == 0xFFFF_FFFF)
 
         // Localhost
         let localhost = try RFC_791.IPv4.Address("127.0.0.1")
@@ -245,7 +246,7 @@ struct IPv4AddressTests {
 
     @Test("IPv4 Address octet extraction")
     func octetExtraction() throws {
-        let address = RFC_791.IPv4.Address(rawValue: 0xC0A80101)
+        let address = RFC_791.IPv4.Address(rawValue: 0xC0A8_0101)
         let (a, b, c, d) = address.octets
 
         #expect(a == 0xC0)  // 192
