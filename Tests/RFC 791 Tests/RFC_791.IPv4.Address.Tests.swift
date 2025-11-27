@@ -70,17 +70,17 @@ struct IPv4AddressTests {
     @Test("IPv4 Address from string - invalid format")
     func initFromStringInvalidFormat() throws {
         let invalid1 = "192.168.1"
-        #expect(throws: RFC_791.IPv4.Address.ParseError.self) {
+        #expect(throws: RFC_791.IPv4.Address.Error.self) {
             _ = try RFC_791.IPv4.Address(invalid1)
         }
 
         let invalid2 = "192.168.1.1.1"
-        #expect(throws: RFC_791.IPv4.Address.ParseError.self) {
+        #expect(throws: RFC_791.IPv4.Address.Error.self) {
             _ = try RFC_791.IPv4.Address(invalid2)
         }
 
         let invalid3 = "not.an.ip.address"
-        #expect(throws: RFC_791.IPv4.Address.ParseError.self) {
+        #expect(throws: RFC_791.IPv4.Address.Error.self) {
             _ = try RFC_791.IPv4.Address(invalid3)
         }
     }
@@ -88,17 +88,17 @@ struct IPv4AddressTests {
     @Test("IPv4 Address from string - out of range")
     func initFromStringOutOfRange() throws {
         let outOfRange1 = "256.0.0.1"
-        #expect(throws: RFC_791.IPv4.Address.ParseError.self) {
+        #expect(throws: RFC_791.IPv4.Address.Error.self) {
             _ = try RFC_791.IPv4.Address(outOfRange1)
         }
 
         let outOfRange2 = "192.168.1.300"
-        #expect(throws: RFC_791.IPv4.Address.ParseError.self) {
+        #expect(throws: RFC_791.IPv4.Address.Error.self) {
             _ = try RFC_791.IPv4.Address(outOfRange2)
         }
 
         let outOfRange3 = "-1.0.0.1"
-        #expect(throws: RFC_791.IPv4.Address.ParseError.self) {
+        #expect(throws: RFC_791.IPv4.Address.Error.self) {
             _ = try RFC_791.IPv4.Address(outOfRange3)
         }
     }

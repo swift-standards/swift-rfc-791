@@ -10,17 +10,6 @@
 //
 // ===----------------------------------------------------------------------===//
 
-// RFC_791.IPv4.Address.swift
-// swift-rfc-791
-//
-// RFC 791: Internet Protocol - IPv4 Address
-// https://www.rfc-editor.org/rfc/rfc791.html
-//
-// Defines the 32-bit IPv4 address structure
-
-import INCITS_4_1986
-import Standards
-
 extension RFC_791.IPv4 {
     /// IPv4 Address (RFC 791)
     ///
@@ -35,27 +24,37 @@ extension RFC_791.IPv4 {
     /// ## Example
     ///
     /// ```swift
-    /// // Parse from dotted-decimal notation
+    /// // Parse from ASCII bytes (canonical)
+    /// let address = try RFC_791.IPv4.Address(ascii: Array("192.168.1.1".utf8))
+    ///
+    /// // Parse from string (convenience)
     /// let address = try RFC_791.IPv4.Address("192.168.1.1")
     ///
     /// // Create from octets
     /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
     ///
-    /// // Create from UInt32
-    /// let address = RFC_791.IPv4.Address(rawValue: 0xC0A80101)
-    ///
-    /// // Serialize to string
-    /// let string = address.description  // "192.168.1.1"
+    /// // Serialize to bytes
+    /// let bytes = [UInt8](address)
     /// ```
-    public struct Address: Hashable, Sendable {
+    public struct Address: Hashable, Sendable, Codable {
         /// The 32-bit address value in network byte order (big-endian)
         public let rawValue: UInt32
+
+        /// Creates an IPv4 address WITHOUT validation
+        ///
+        /// **Warning**: Bypasses RFC validation. Only use for:
+        /// - Static constants
+        /// - Pre-validated values
+        /// - Internal construction after validation
+        init(__unchecked: Void, rawValue: UInt32) {
+            self.rawValue = rawValue
+        }
 
         /// Creates an IPv4 address from a 32-bit value
         ///
         /// - Parameter rawValue: The 32-bit address in network byte order
         public init(rawValue: UInt32) {
-            self.rawValue = rawValue
+            self.init(__unchecked: (), rawValue: rawValue)
         }
     }
 }
@@ -79,8 +78,11 @@ extension RFC_791.IPv4.Address {
     /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
     /// ```
     public init(_ octet1: UInt8, _ octet2: UInt8, _ octet3: UInt8, _ octet4: UInt8) {
-        self.rawValue =
-            UInt32(octet1) << 24 | UInt32(octet2) << 16 | UInt32(octet3) << 8 | UInt32(octet4)
+        let value = UInt32(octet1) << 24
+            | UInt32(octet2) << 16
+            | UInt32(octet3) << 8
+            | UInt32(octet4)
+        self.init(__unchecked: (), rawValue: value)
     }
 }
 
@@ -109,109 +111,110 @@ extension RFC_791.IPv4.Address {
     }
 }
 
-// MARK: - String Parsing (Dotted-Decimal Notation)
+// MARK: - UInt8.ASCII.Serializable Conformance
 
-extension RFC_791.IPv4.Address {
-    /// Parsing errors for IPv4 addresses
-    public enum ParseError: Error, Equatable {
-        case invalidFormat
-        case invalidOctet(String)
-        case octetOutOfRange(Int)
-    }
+extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
+    /// Serialization function for ASCII byte output
+    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
 
-    /// Creates an IPv4 address from a dotted-decimal string
+    /// Creates an IPv4 address from ASCII bytes in dotted-decimal notation
     ///
-    /// Parses a string in the format "a.b.c.d" where each component is a decimal
-    /// number from 0 to 255.
+    /// This is the canonical parsing transformation per STANDARD_IMPLEMENTATION_PATTERNS.md.
+    /// String parsing is derived from this as composition:
+    /// ```
+    /// String → [UInt8] (UTF-8) → IPv4.Address
+    /// ```
     ///
-    /// - Parameter string: A dotted-decimal IPv4 address string
-    /// - Throws: `ParseError` if the string format is invalid
+    /// ## Category Theory
+    ///
+    /// Parsing transformation:
+    /// - **Domain**: [UInt8] (ASCII bytes)
+    /// - **Codomain**: RFC_791.IPv4.Address (structured data)
+    ///
+    /// ## Constraints
+    ///
+    /// Per RFC 791 Section 3.2:
+    /// - Four decimal octets separated by periods
+    /// - Each octet in range 0-255
+    /// - No leading zeros (strict mode)
     ///
     /// ## Example
     ///
     /// ```swift
-    /// let address = try RFC_791.IPv4.Address("192.168.1.1")
+    /// let bytes = Array("192.168.1.1".utf8)
+    /// let address = try RFC_791.IPv4.Address(ascii: bytes)
     /// ```
-    public init(_ string: some StringProtocol) throws {
-        let components = string.split(separator: ".")
-
-        guard components.count == 4 else {
-            throw ParseError.invalidFormat
+    ///
+    /// - Parameters:
+    ///   - bytes: ASCII bytes representing dotted-decimal notation
+    ///   - context: Parsing context (unused for context-free parsing)
+    /// - Throws: `Error` if the format is invalid
+    public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void) throws(Error)
+    where Bytes.Element == UInt8 {
+        guard !bytes.isEmpty else {
+            throw .empty
         }
 
         var octets: [UInt8] = []
         octets.reserveCapacity(4)
 
-        for component in components {
-            // Convert substring to string for parsing
-            guard let value = Int(component) else {
-                throw ParseError.invalidOctet(String(component))
-            }
+        var currentOctet: Int = 0
+        var digitCount = 0
+        var position = 0
 
-            guard (0...255).contains(value) else {
-                throw ParseError.octetOutOfRange(value)
-            }
+        for byte in bytes {
+            if byte == UInt8.ascii.period {
+                // End of octet
+                guard digitCount > 0 else {
+                    throw .invalidFormat(String(decoding: bytes, as: UTF8.self))
+                }
+                guard currentOctet <= 255 else {
+                    throw .octetOutOfRange(currentOctet, position: position)
+                }
+                octets.append(UInt8(currentOctet))
+                currentOctet = 0
+                digitCount = 0
+                position += 1
+            } else if byte.ascii.isDigit {
+                // Check for leading zeros (except for "0" itself)
+                if digitCount == 1, currentOctet == 0 {
+                    throw .leadingZero(String(decoding: bytes, as: UTF8.self), position: position)
+                }
+                currentOctet = currentOctet * 10 + Int(byte - UInt8.ascii.`0`)
+                digitCount += 1
 
-            octets.append(UInt8(value))
+                // Early overflow check
+                if currentOctet > 255 {
+                    throw .octetOutOfRange(currentOctet, position: position)
+                }
+            } else {
+                throw .invalidCharacter(
+                    String(decoding: bytes, as: UTF8.self),
+                    byte: byte,
+                    position: position
+                )
+            }
+        }
+
+        // Handle final octet
+        guard digitCount > 0 else {
+            throw .invalidFormat(String(decoding: bytes, as: UTF8.self))
+        }
+        guard currentOctet <= 255 else {
+            throw .octetOutOfRange(currentOctet, position: position)
+        }
+        octets.append(UInt8(currentOctet))
+
+        // Must have exactly 4 octets
+        guard octets.count == 4 else {
+            throw .invalidFormat(String(decoding: bytes, as: UTF8.self))
         }
 
         self.init(octets[0], octets[1], octets[2], octets[3])
     }
 }
 
-// MARK: - String Conversion
-
-extension RFC_791.IPv4.Address: CustomStringConvertible {
-    /// Returns the dotted-decimal string representation
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
-    /// print(address.description)  // "192.168.1.1"
-    /// ```
-    public var description: String { .init(self) }
-}
-
-extension String {
-    /// Creates a string representation of an IPv4 address
-    ///
-    /// This is a convenience transformation that composes through the canonical
-    /// byte representation:
-    /// ```
-    /// IPv4.Address → [UInt8] (ASCII) → String (UTF-8 interpretation)
-    /// ```
-    ///
-    /// ## Category Theory
-    ///
-    /// This is functor composition - the String transformation is derived from
-    /// the more universal [UInt8] transformation. ASCII is a subset of UTF-8,
-    /// so this conversion is always safe.
-    ///
-    /// - Parameter address: The IPv4 address to represent
-    public init(
-        _ address: RFC_791.IPv4.Address
-    ) {
-        // Compose through canonical byte representation
-        // ASCII ⊂ UTF-8, so this is always valid
-        self.init(decoding: [UInt8](ascii: address), as: UTF8.self)
-    }
-}
-
-// MARK: - Codable
-
-extension RFC_791.IPv4.Address: Codable {
-    public init(from decoder: any Decoder) throws {
-        let container = try decoder.singleValueContainer()
-        let string = try container.decode(String.self)
-        try self.init(string)
-    }
-
-    public func encode(to encoder: any Encoder) throws {
-        var container = encoder.singleValueContainer()
-        try container.encode(description)
-    }
-}
+extension RFC_791.IPv4.Address: CustomStringConvertible {}
 
 // MARK: - Comparable
 
@@ -235,24 +238,17 @@ extension RFC_791.IPv4.Address: Comparable {
     }
 }
 
-// MARK: - ExpressibleByStringLiteral
+extension RFC_791.IPv4.Address: ExpressibleByStringLiteral {}
 
-extension RFC_791.IPv4.Address: ExpressibleByStringLiteral {
-    /// Creates an IPv4 address from a string literal
-    ///
-    /// Allows creating addresses using string literal syntax. Invalid addresses
-    /// will cause a runtime error.
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let address: RFC_791.IPv4.Address = "192.168.1.1"
-    /// ```
-    public init(stringLiteral value: String) {
-        do {
-            try self.init(value)
-        } catch {
-            fatalError("Invalid IPv4 address literal: \(value)")
-        }
-    }
+// MARK: - Static Constants
+
+extension RFC_791.IPv4.Address {
+    /// The unspecified address (0.0.0.0)
+    public static let `any` = RFC_791.IPv4.Address(__unchecked: (), rawValue: 0)
+
+    /// The broadcast address (255.255.255.255)
+    public static let broadcast = RFC_791.IPv4.Address(__unchecked: (), rawValue: 0xFFFF_FFFF)
+
+    /// The loopback address (127.0.0.1)
+    public static let loopback = RFC_791.IPv4.Address(__unchecked: (), rawValue: 0x7F00_0001)
 }

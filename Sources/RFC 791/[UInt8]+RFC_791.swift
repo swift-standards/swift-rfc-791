@@ -10,15 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-// [UInt8]+IPv4.swift
-// swift-rfc-791
-//
-// Canonical byte serialization for IPv4 addresses
-
-import INCITS_4_1986
-import Standards
-
-// MARK: - Canonical Serialization (Universal Property)
+// MARK: - IPv4.Address Serialization
 
 extension [UInt8] {
     /// Creates ASCII byte representation of an IPv4 address (RFC 791 dotted-decimal notation)
@@ -31,13 +23,9 @@ extension [UInt8] {
     ///
     /// ## Category Theory
     ///
-    /// This is the most universal serialization (natural transformation):
-    /// - **Domain**: IPv4.Address (structured data)
-    /// - **Codomain**: [UInt8] (ASCII bytes)
-    ///
-    /// String representation is derived as composition:
+    /// Natural transformation: RFC_791.IPv4.Address → [UInt8]
     /// ```
-    /// IPv4.Address → [UInt8] (ASCII) → String (UTF-8 interpretation)
+    /// IPv4.Address → [UInt8] (ASCII) → String (UTF-8)
     /// ```
     ///
     /// ## Performance
@@ -51,13 +39,13 @@ extension [UInt8] {
     ///
     /// ```swift
     /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
-    /// let bytes = [UInt8](ascii: address)
+    /// let bytes = [UInt8](address)
     /// // bytes == [49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 49]
     /// // ASCII:     '1' '9' '2' '.' '1' '6' '8' '.' '1' '.' '1'
     /// ```
     ///
     /// - Parameter address: The IPv4 address to serialize
-    public init(ascii address: RFC_791.IPv4.Address) {
+    public init(_ address: RFC_791.IPv4.Address) {
         let (a, b, c, d) = address.octets
 
         // Maximum length: "255.255.255.255" = 15 bytes
@@ -68,7 +56,7 @@ extension [UInt8] {
         func appendDecimal(_ value: UInt8) {
             // Fast path for single digit (0-9)
             if value < 10 {
-                self.append(UInt8(ascii: "0") + value)
+                self.append(UInt8.ascii.`0` + value)
                 return
             }
 
@@ -76,8 +64,8 @@ extension [UInt8] {
             if value < 100 {
                 let tens = value / 10
                 let ones = value % 10
-                self.append(UInt8(ascii: "0") + tens)
-                self.append(UInt8(ascii: "0") + ones)
+                self.append(UInt8.ascii.`0` + tens)
+                self.append(UInt8.ascii.`0` + ones)
                 return
             }
 
@@ -87,18 +75,78 @@ extension [UInt8] {
             let tens = remainder / 10
             let ones = remainder % 10
 
-            self.append(UInt8(ascii: "0") + hundreds)
-            self.append(UInt8(ascii: "0") + tens)
-            self.append(UInt8(ascii: "0") + ones)
+            self.append(UInt8.ascii.`0` + hundreds)
+            self.append(UInt8.ascii.`0` + tens)
+            self.append(UInt8.ascii.`0` + ones)
         }
 
         // Serialize: <a>.<b>.<c>.<d>
         appendDecimal(a)
-        self.append(.ascii.period)
+        self.append(UInt8.ascii.period)
         appendDecimal(b)
-        self.append(.ascii.period)
+        self.append(UInt8.ascii.period)
         appendDecimal(c)
-        self.append(.ascii.period)
+        self.append(UInt8.ascii.period)
         appendDecimal(d)
+    }
+}
+
+// MARK: - TypeOfService Serialization
+
+extension [UInt8] {
+    /// Creates byte representation of a Type of Service field
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.TypeOfService → [UInt8]
+    ///
+    /// - Parameter tos: The Type of Service value to serialize
+    public init(_ tos: RFC_791.TypeOfService) {
+        self = [tos.rawValue]
+    }
+}
+
+// MARK: - Flags Serialization
+
+extension [UInt8] {
+    /// Creates byte representation of IP Flags
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.Flags → [UInt8]
+    ///
+    /// - Parameter flags: The Flags value to serialize
+    public init(_ flags: RFC_791.Flags) {
+        self = [flags.rawValue]
+    }
+}
+
+// MARK: - Protocol Serialization
+
+extension [UInt8] {
+    /// Creates byte representation of a Protocol field
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.Protocol → [UInt8]
+    ///
+    /// - Parameter proto: The Protocol value to serialize
+    public init(_ proto: RFC_791.`Protocol`) {
+        self = [proto.rawValue]
+    }
+}
+
+// MARK: - Precedence Serialization
+
+extension [UInt8] {
+    /// Creates byte representation of a Precedence value
+    ///
+    /// ## Category Theory
+    ///
+    /// Natural transformation: RFC_791.Precedence → [UInt8]
+    ///
+    /// - Parameter precedence: The Precedence value to serialize
+    public init(_ precedence: RFC_791.Precedence) {
+        self = [precedence.rawValue]
     }
 }
