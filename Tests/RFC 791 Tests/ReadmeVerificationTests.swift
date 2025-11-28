@@ -52,8 +52,7 @@ struct ReadmeVerificationTests {
         address.serialize(into: &buffer)
 
         // Verify it produces ASCII dotted-decimal
-        let asciiString = String(bytes: buffer, encoding: .ascii)
-        #expect(asciiString == "192.168.1.1")
+        #expect(String(ascii: buffer) == "192.168.1.1")
     }
 
     // MARK: - IPv4 Addresses Examples
@@ -258,10 +257,10 @@ struct ReadmeVerificationTests {
     func addressSerialization() {
         // Address serializes to ASCII dotted-decimal (variable length)
         let address: RFC_791.IPv4.Address = "192.168.1.1"
-        let bytes = [UInt8](address)
+        let bytes = [UInt8](ascii: address)
 
         // Verify ASCII output
-        #expect(String(bytes: bytes, encoding: .ascii) == "192.168.1.1")
+        #expect(String(ascii: bytes) == "192.168.1.1")
     }
 
     // MARK: - Binary Parsing Examples
