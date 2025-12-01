@@ -126,11 +126,10 @@ extension RFC_791.TTL: UInt8.Serializable {
     public static func serialize<Buffer>(
         _ ttl: RFC_791.TTL,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(ttl.rawValue)
     }
 }
-
 
 // MARK: - CustomStringConvertible
 

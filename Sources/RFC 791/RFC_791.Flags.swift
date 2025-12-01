@@ -183,7 +183,7 @@ extension RFC_791.Flags: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ flags: RFC_791.Flags,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(contentsOf: [flags.rawValue << 5])
     }
 }

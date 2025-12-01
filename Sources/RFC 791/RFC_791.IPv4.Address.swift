@@ -117,14 +117,14 @@ extension RFC_791.IPv4.Address: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ address: RFC_791.IPv4.Address,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         let (a, b, c, d) = address.octets
         buffer.append(a)
         buffer.append(b)
         buffer.append(c)
         buffer.append(d)
     }
-    
+
     /// Creates from binary bytes (4 bytes, network byte order)
     ///
     /// - Parameter bytes: Exactly 4 bytes in network byte order
@@ -134,23 +134,22 @@ extension RFC_791.IPv4.Address: UInt8.Serializable {
         guard bytes.count == 4 else {
             throw .invalidFormat("Expected 4 bytes, got \(bytes.count)")
         }
-        
+
         var iterator = bytes.makeIterator()
         let a = iterator.next()!
         let b = iterator.next()!
         let c = iterator.next()!
         let d = iterator.next()!
-        
+
         self.init(a, b, c, d)
     }
 }
-
 
 extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
     public static func serialize<Buffer>(
         ascii address: RFC_791.IPv4.Address,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         let (a, b, c, d) = address.octets
 
         buffer.reserveCapacity(15)
@@ -192,7 +191,7 @@ extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
         buffer.append(UInt8.ascii.period)
         appendDecimal(d)
     }
-    
+
     /// Creates an IPv4 address from ASCII bytes in dotted-decimal notation
     ///
     /// This is the canonical parsing transformation per STANDARD_IMPLEMENTATION_PATTERNS.md.

@@ -126,12 +126,11 @@ extension RFC_791.TotalLength: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ totalLength: RFC_791.TotalLength,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(UInt8(totalLength.rawValue >> 8))
         buffer.append(UInt8(totalLength.rawValue & 0xFF))
     }
 }
-
 
 // MARK: - CustomStringConvertible
 

@@ -138,7 +138,7 @@ extension RFC_791.FragmentOffset: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ fragmentOffset: RFC_791.FragmentOffset,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(UInt8((fragmentOffset.rawValue >> 8) & 0x1F))  // Upper 5 bits of offset
         buffer.append(UInt8(fragmentOffset.rawValue & 0xFF))  // Lower 8 bits of offset
     }

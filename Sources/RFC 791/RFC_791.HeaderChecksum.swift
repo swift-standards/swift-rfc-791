@@ -150,12 +150,11 @@ extension RFC_791.HeaderChecksum: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ headerChecksum: RFC_791.HeaderChecksum,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(UInt8(headerChecksum.rawValue >> 8))
         buffer.append(UInt8(headerChecksum.rawValue & 0xFF))
     }
 }
-
 
 // MARK: - CustomStringConvertible
 

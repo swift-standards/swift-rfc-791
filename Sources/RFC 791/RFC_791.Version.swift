@@ -102,7 +102,7 @@ extension RFC_791.Version: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ version: RFC_791.Version,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(version.rawValue << 4)
     }
 }

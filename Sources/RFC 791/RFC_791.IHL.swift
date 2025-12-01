@@ -144,11 +144,10 @@ extension RFC_791.IHL: UInt8.Serializable {
     static public func serialize<Buffer>(
         _ ihl: RFC_791.IHL,
         into buffer: inout Buffer
-    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+    ) where Buffer: RangeReplaceableCollection, Buffer.Element == UInt8 {
         buffer.append(ihl.rawValue)
     }
 }
-
 
 // MARK: - CustomStringConvertible
 
