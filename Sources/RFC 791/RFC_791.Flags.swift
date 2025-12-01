@@ -180,7 +180,12 @@ extension RFC_791.Flags {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Flags: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+    static public func serialize<Buffer>(
+        _ flags: RFC_791.Flags,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+        buffer.append(contentsOf: [flags.rawValue << 5])
+    }
 }
 
 // MARK: - CustomStringConvertible

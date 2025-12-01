@@ -85,7 +85,13 @@ extension RFC_791.Identification {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Identification: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        _ identification: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == UInt8 {
+        buffer.append(UInt8(identification.rawValue >> 8))
+        buffer.append(UInt8(identification.rawValue & 0xFF))
+    }
 }
 
 // MARK: - [UInt8] Conversion

@@ -156,7 +156,12 @@ extension RFC_791.Precedence {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Precedence: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        _ precedence: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == UInt8 {
+        buffer.append(precedence.rawValue)
+    }
 }
 
 // MARK: - CustomStringConvertible

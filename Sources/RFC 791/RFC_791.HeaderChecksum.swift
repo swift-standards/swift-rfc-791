@@ -147,26 +147,15 @@ extension RFC_791.HeaderChecksum {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.HeaderChecksum: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
-}
-
-// MARK: - [UInt8] Conversion
-
-extension [UInt8] {
-    /// Creates byte representation of a HeaderChecksum field (big-endian)
-    ///
-    /// ## Category Theory
-    ///
-    /// Natural transformation: RFC_791.HeaderChecksum → [UInt8]
-    ///
-    /// - Parameter headerChecksum: The HeaderChecksum value to serialize
-    public init(_ headerChecksum: RFC_791.HeaderChecksum) {
-        self = [
-            UInt8(headerChecksum.rawValue >> 8),
-            UInt8(headerChecksum.rawValue & 0xFF),
-        ]
+    static public func serialize<Buffer>(
+        _ headerChecksum: RFC_791.HeaderChecksum,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+        buffer.append(UInt8(headerChecksum.rawValue >> 8))
+        buffer.append(UInt8(headerChecksum.rawValue & 0xFF))
     }
 }
+
 
 // MARK: - CustomStringConvertible
 

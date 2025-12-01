@@ -99,23 +99,11 @@ extension RFC_791.Version {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.Version: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
-}
-
-// MARK: - [UInt8] Conversion
-
-extension [UInt8] {
-    /// Creates byte representation of a Version field
-    ///
-    /// Writes the version in the upper 4 bits.
-    ///
-    /// ## Category Theory
-    ///
-    /// Natural transformation: RFC_791.Version → [UInt8]
-    ///
-    /// - Parameter version: The Version value to serialize
-    public init(_ version: RFC_791.Version) {
-        self = [version.rawValue << 4]
+    static public func serialize<Buffer>(
+        _ version: RFC_791.Version,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+        buffer.append(version.rawValue << 4)
     }
 }
 

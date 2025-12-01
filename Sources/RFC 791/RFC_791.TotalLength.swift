@@ -123,26 +123,15 @@ extension RFC_791.TotalLength {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.TotalLength: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
-}
-
-// MARK: - [UInt8] Conversion
-
-extension [UInt8] {
-    /// Creates byte representation of a TotalLength field (big-endian)
-    ///
-    /// ## Category Theory
-    ///
-    /// Natural transformation: RFC_791.TotalLength → [UInt8]
-    ///
-    /// - Parameter totalLength: The TotalLength value to serialize
-    public init(_ totalLength: RFC_791.TotalLength) {
-        self = [
-            UInt8(totalLength.rawValue >> 8),
-            UInt8(totalLength.rawValue & 0xFF),
-        ]
+    static public func serialize<Buffer>(
+        _ totalLength: RFC_791.TotalLength,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+        buffer.append(UInt8(totalLength.rawValue >> 8))
+        buffer.append(UInt8(totalLength.rawValue & 0xFF))
     }
 }
+
 
 // MARK: - CustomStringConvertible
 

@@ -49,7 +49,7 @@ struct ReadmeVerificationTests {
 
         // Address serializes to ASCII (dotted-decimal)
         let address: RFC_791.IPv4.Address = "192.168.1.1"
-        address.serialize(into: &buffer)
+        address.ascii.serialize(into: &buffer)
 
         // Verify it produces ASCII dotted-decimal
         #expect(String(ascii: buffer) == "192.168.1.1")

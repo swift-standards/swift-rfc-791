@@ -114,9 +114,15 @@ extension RFC_791.IPv4.Address {
 
 // MARK: - UInt8.ASCII.Serializable Conformance
 extension RFC_791.IPv4.Address: UInt8.Serializable {
-    public static let serialize: @Sendable (RFC_791.IPv4.Address) -> [UInt8] = { address in
+    static public func serialize<Buffer>(
+        _ address: RFC_791.IPv4.Address,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
         let (a, b, c, d) = address.octets
-        return [a, b, c, d]
+        buffer.append(a)
+        buffer.append(b)
+        buffer.append(c)
+        buffer.append(d)
     }
     
     /// Creates from binary bytes (4 bytes, network byte order)
@@ -141,6 +147,52 @@ extension RFC_791.IPv4.Address: UInt8.Serializable {
 
 
 extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
+    public static func serialize<Buffer>(
+        ascii address: RFC_791.IPv4.Address,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+        let (a, b, c, d) = address.octets
+
+        buffer.reserveCapacity(15)
+
+        // Helper to append decimal ASCII digits for a UInt8
+        func appendDecimal(_ value: UInt8) {
+            // Fast path for single digit (0-9)
+            if value < 10 {
+                buffer.append(UInt8.ascii.`0` + value)
+                return
+            }
+
+            // Fast path for two digits (10-99)
+            if value < 100 {
+                let tens = value / 10
+                let ones = value % 10
+                buffer.append(UInt8.ascii.`0` + tens)
+                buffer.append(UInt8.ascii.`0` + ones)
+                return
+            }
+
+            // Three digits (100-255)
+            let hundreds = value / 100
+            let remainder = value % 100
+            let tens = remainder / 10
+            let ones = remainder % 10
+
+            buffer.append(UInt8.ascii.`0` + hundreds)
+            buffer.append(UInt8.ascii.`0` + tens)
+            buffer.append(UInt8.ascii.`0` + ones)
+        }
+
+        // Serialize: <a>.<b>.<c>.<d>
+        appendDecimal(a)
+        buffer.append(UInt8.ascii.period)
+        appendDecimal(b)
+        buffer.append(UInt8.ascii.period)
+        appendDecimal(c)
+        buffer.append(UInt8.ascii.period)
+        appendDecimal(d)
+    }
+    
     /// Creates an IPv4 address from ASCII bytes in dotted-decimal notation
     ///
     /// This is the canonical parsing transformation per STANDARD_IMPLEMENTATION_PATTERNS.md.
@@ -235,85 +287,6 @@ extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
         }
 
         self.init(octets[0], octets[1], octets[2], octets[3])
-    }
-    
-    /// Creates ASCII byte representation of an IPv4 address (RFC 791 dotted-decimal notation)
-    ///
-    /// This is the canonical serialization of IPv4 addresses to bytes.
-    /// The format is defined by RFC 791 as dotted-decimal notation:
-    /// ```
-    /// <decimal>.<decimal>.<decimal>.<decimal>
-    /// ```
-    ///
-    /// ## Category Theory
-    ///
-    /// Natural transformation: RFC_791.IPv4.Address → [UInt8]
-    /// ```
-    /// IPv4.Address → [UInt8] (ASCII) → String (UTF-8)
-    /// ```
-    ///
-    /// ## Performance
-    ///
-    /// Direct ASCII generation without intermediate String allocations:
-    /// - Pre-allocated capacity (15 bytes max: "255.255.255.255")
-    /// - ASCII digit computation via division/modulo
-    /// - No string interpolation overhead
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
-    /// let bytes = [UInt8](address)
-    /// // bytes == [49, 57, 50, 46, 49, 54, 56, 46, 49, 46, 49]
-    /// // ASCII:     '1' '9' '2' '.' '1' '6' '8' '.' '1' '.' '1'
-    /// ```
-    ///
-    /// - Parameter address: The IPv4 address to serialize
-    public static func serialize(ascii address: Self) -> [UInt8] {
-        let (a, b, c, d) = address.octets
-
-        // Maximum length: "255.255.255.255" = 15 bytes
-        var result: [UInt8] = []
-        result.reserveCapacity(15)
-
-        // Helper to append decimal ASCII digits for a UInt8
-        func appendDecimal(_ value: UInt8) {
-            // Fast path for single digit (0-9)
-            if value < 10 {
-                result.append(UInt8.ascii.`0` + value)
-                return
-            }
-
-            // Fast path for two digits (10-99)
-            if value < 100 {
-                let tens = value / 10
-                let ones = value % 10
-                result.append(UInt8.ascii.`0` + tens)
-                result.append(UInt8.ascii.`0` + ones)
-                return
-            }
-
-            // Three digits (100-255)
-            let hundreds = value / 100
-            let remainder = value % 100
-            let tens = remainder / 10
-            let ones = remainder % 10
-
-            result.append(UInt8.ascii.`0` + hundreds)
-            result.append(UInt8.ascii.`0` + tens)
-            result.append(UInt8.ascii.`0` + ones)
-        }
-
-        // Serialize: <a>.<b>.<c>.<d>
-        appendDecimal(a)
-        result.append(UInt8.ascii.period)
-        appendDecimal(b)
-        result.append(UInt8.ascii.period)
-        appendDecimal(c)
-        result.append(UInt8.ascii.period)
-        appendDecimal(d)
-        
-        return result
     }
 }
 

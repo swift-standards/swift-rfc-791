@@ -123,23 +123,14 @@ extension RFC_791.TTL {
 // MARK: - UInt8.Serializable Conformance
 
 extension RFC_791.TTL: UInt8.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
-}
-
-// MARK: - [UInt8] Conversion
-
-extension [UInt8] {
-    /// Creates byte representation of a TTL field
-    ///
-    /// ## Category Theory
-    ///
-    /// Natural transformation: RFC_791.TTL → [UInt8]
-    ///
-    /// - Parameter ttl: The TTL value to serialize
-    public init(_ ttl: RFC_791.TTL) {
-        self = [ttl.rawValue]
+    public static func serialize<Buffer>(
+        _ ttl: RFC_791.TTL,
+        into buffer: inout Buffer
+    ) where Buffer : RangeReplaceableCollection, Buffer.Element == UInt8 {
+        buffer.append(ttl.rawValue)
     }
 }
+
 
 // MARK: - CustomStringConvertible
 
