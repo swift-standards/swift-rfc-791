@@ -132,9 +132,9 @@ extension RFC_791.FragmentOffset {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.FragmentOffset: UInt8.Serializable {
+extension RFC_791.FragmentOffset: Binary.Serializable {
     static public func serialize<Buffer>(
         _ fragmentOffset: RFC_791.FragmentOffset,
         into buffer: inout Buffer

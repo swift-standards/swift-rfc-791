@@ -120,9 +120,9 @@ extension RFC_791.TotalLength {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.TotalLength: UInt8.Serializable {
+extension RFC_791.TotalLength: Binary.Serializable {
     static public func serialize<Buffer>(
         _ totalLength: RFC_791.TotalLength,
         into buffer: inout Buffer

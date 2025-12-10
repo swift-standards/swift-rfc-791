@@ -144,9 +144,9 @@ extension RFC_791.HeaderChecksum {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.HeaderChecksum: UInt8.Serializable {
+extension RFC_791.HeaderChecksum: Binary.Serializable {
     static public func serialize<Buffer>(
         _ headerChecksum: RFC_791.HeaderChecksum,
         into buffer: inout Buffer

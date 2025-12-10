@@ -195,9 +195,9 @@ extension RFC_791.TypeOfService {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.TypeOfService: UInt8.Serializable {
+extension RFC_791.TypeOfService: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ tos: Self,
         into buffer: inout Buffer

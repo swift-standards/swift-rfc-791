@@ -112,8 +112,8 @@ extension RFC_791.IPv4.Address {
     }
 }
 
-// MARK: - UInt8.ASCII.Serializable Conformance
-extension RFC_791.IPv4.Address: UInt8.Serializable {
+// MARK: - Binary.ASCII.Serializable Conformance
+extension RFC_791.IPv4.Address: Binary.Serializable {
     static public func serialize<Buffer>(
         _ address: RFC_791.IPv4.Address,
         into buffer: inout Buffer
@@ -145,7 +145,7 @@ extension RFC_791.IPv4.Address: UInt8.Serializable {
     }
 }
 
-extension RFC_791.IPv4.Address: UInt8.ASCII.Serializable {
+extension RFC_791.IPv4.Address: Binary.ASCII.Serializable {
     public static func serialize<Buffer>(
         ascii address: RFC_791.IPv4.Address,
         into buffer: inout Buffer

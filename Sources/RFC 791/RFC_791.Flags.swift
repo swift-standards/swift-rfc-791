@@ -177,9 +177,9 @@ extension RFC_791.Flags {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.Flags: UInt8.Serializable {
+extension RFC_791.Flags: Binary.Serializable {
     static public func serialize<Buffer>(
         _ flags: RFC_791.Flags,
         into buffer: inout Buffer

@@ -153,9 +153,9 @@ extension RFC_791.`Protocol` {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.`Protocol`: UInt8.Serializable {
+extension RFC_791.`Protocol`: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ proto: Self,
         into buffer: inout Buffer

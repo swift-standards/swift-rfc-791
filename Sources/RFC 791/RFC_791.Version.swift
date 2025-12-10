@@ -96,9 +96,9 @@ extension RFC_791.Version {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.Version: UInt8.Serializable {
+extension RFC_791.Version: Binary.Serializable {
     static public func serialize<Buffer>(
         _ version: RFC_791.Version,
         into buffer: inout Buffer

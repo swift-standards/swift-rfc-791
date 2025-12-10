@@ -153,9 +153,9 @@ extension RFC_791.Precedence {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.Precedence: UInt8.Serializable {
+extension RFC_791.Precedence: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ precedence: Self,
         into buffer: inout Buffer

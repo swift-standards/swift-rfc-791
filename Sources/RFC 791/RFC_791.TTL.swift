@@ -120,9 +120,9 @@ extension RFC_791.TTL {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.TTL: UInt8.Serializable {
+extension RFC_791.TTL: Binary.Serializable {
     public static func serialize<Buffer>(
         _ ttl: RFC_791.TTL,
         into buffer: inout Buffer

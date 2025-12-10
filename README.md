@@ -19,8 +19,8 @@ The implementation follows RFC 791 (September 1981), the foundational specificat
 - Type of Service with Precedence levels and D/T/R flags
 - Fragment handling with offset calculations (8-octet units)
 - Header checksum computation and verification (one's complement algorithm)
-- Binary serialization via `UInt8.Serializable` protocol
-- ASCII serialization for addresses via `UInt8.ASCII.Serializable` protocol
+- Binary serialization via `Binary.Serializable` protocol
+- ASCII serialization for addresses via `Binary.ASCII.Serializable` protocol
 - 202 tests covering parsing, serialization, validation, and edge cases
 
 ## Installation

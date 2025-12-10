@@ -138,9 +138,9 @@ extension RFC_791.IHL {
     }
 }
 
-// MARK: - UInt8.Serializable Conformance
+// MARK: - Binary.Serializable Conformance
 
-extension RFC_791.IHL: UInt8.Serializable {
+extension RFC_791.IHL: Binary.Serializable {
     static public func serialize<Buffer>(
         _ ihl: RFC_791.IHL,
         into buffer: inout Buffer
