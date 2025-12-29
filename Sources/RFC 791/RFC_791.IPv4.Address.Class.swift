@@ -35,40 +35,40 @@ extension RFC_791.IPv4.Address {
     ///
     /// ```swift
     /// let address = RFC_791.IPv4.Address(192, 168, 1, 1)
-    /// print(address.addressClass)  // .classC
+    /// print(address.class)  // .c
     ///
     /// let multicast = RFC_791.IPv4.Address(224, 0, 0, 1)
-    /// print(multicast.addressClass)  // .classD
+    /// print(multicast.class)  // .d
     /// ```
     public enum Class: Sendable, Codable, Hashable {
         /// Class A: Leading bit 0 (0.0.0.0 - 127.255.255.255)
         ///
         /// 8-bit network prefix, 24-bit host identifier.
         /// Supports up to 126 networks with ~16 million hosts each.
-        case classA
+        case a
 
         /// Class B: Leading bits 10 (128.0.0.0 - 191.255.255.255)
         ///
         /// 16-bit network prefix, 16-bit host identifier.
         /// Supports up to 16,384 networks with ~65,000 hosts each.
-        case classB
+        case b
 
         /// Class C: Leading bits 110 (192.0.0.0 - 223.255.255.255)
         ///
         /// 24-bit network prefix, 8-bit host identifier.
         /// Supports up to 2 million networks with 254 hosts each.
-        case classC
+        case c
 
         /// Class D: Leading bits 1110 (224.0.0.0 - 239.255.255.255)
         ///
         /// Reserved for multicast group addresses.
         /// No network/host distinction.
-        case classD
+        case d
 
         /// Class E: Leading bits 1111 (240.0.0.0 - 255.255.255.255)
         ///
         /// Reserved for experimental use.
-        case classE
+        case e
     }
 }
 
@@ -85,54 +85,83 @@ extension RFC_791.IPv4.Address {
     ///
     /// ```swift
     /// let address = RFC_791.IPv4.Address(10, 0, 0, 1)
-    /// print(address.addressClass)  // .classA
+    /// print(address.class)  // .a
     ///
     /// let address2 = RFC_791.IPv4.Address(172, 16, 0, 1)
-    /// print(address2.addressClass)  // .classB
+    /// print(address2.class)  // .b
     /// ```
-    public var addressClass: Class {
+    public var `class`: Class {
         let firstOctet = UInt8((rawValue >> 24) & 0xFF)
 
         // Check leading bits
         if firstOctet & 0b1000_0000 == 0 {
             // 0xxxxxxx - Class A
-            return .classA
+            return .a
         } else if firstOctet & 0b1100_0000 == 0b1000_0000 {
             // 10xxxxxx - Class B
-            return .classB
+            return .b
         } else if firstOctet & 0b1110_0000 == 0b1100_0000 {
             // 110xxxxx - Class C
-            return .classC
+            return .c
         } else if firstOctet & 0b1111_0000 == 0b1110_0000 {
             // 1110xxxx - Class D (Multicast)
-            return .classD
+            return .d
         } else {
             // 1111xxxx - Class E (Reserved)
-            return .classE
+            return .e
+        }
+    }
+}
+
+// MARK: - Address Type Predicates
+
+extension RFC_791.IPv4.Address {
+    /// Namespace for address type predicates
+    public struct Is: Sendable {
+        @usableFromInline
+        let address: RFC_791.IPv4.Address
+
+        @usableFromInline
+        init(_ address: RFC_791.IPv4.Address) {
+            self.address = address
+        }
+
+        /// Whether this address is a multicast address (Class D)
+        ///
+        /// Multicast addresses are used to send a single packet to multiple
+        /// destinations simultaneously.
+        ///
+        /// ## Example
+        ///
+        /// ```swift
+        /// let multicast = RFC_791.IPv4.Address(224, 0, 0, 1)
+        /// print(multicast.is.multicast)  // true
+        /// ```
+        @inlinable
+        public var multicast: Bool {
+            address.class == .d
+        }
+
+        /// Whether this address is reserved (Class E)
+        ///
+        /// Class E addresses are reserved for experimental purposes and
+        /// should not be used on the public Internet.
+        @inlinable
+        public var reserved: Bool {
+            address.class == .e
         }
     }
 
-    /// Whether this address is a multicast address (Class D)
-    ///
-    /// Multicast addresses are used to send a single packet to multiple
-    /// destinations simultaneously.
+    /// Access address type predicates
     ///
     /// ## Example
     ///
     /// ```swift
-    /// let multicast = RFC_791.IPv4.Address(224, 0, 0, 1)
-    /// print(multicast.isMulticast)  // true
+    /// let address = RFC_791.IPv4.Address(224, 0, 0, 1)
+    /// if address.is.multicast { ... }
     /// ```
-    public var isMulticast: Bool {
-        addressClass == .classD
-    }
-
-    /// Whether this address is reserved (Class E)
-    ///
-    /// Class E addresses are reserved for experimental purposes and
-    /// should not be used on the public Internet.
-    public var isReserved: Bool {
-        addressClass == .classE
+    public var `is`: Is {
+        Is(self)
     }
 }
 
@@ -141,11 +170,11 @@ extension RFC_791.IPv4.Address {
 extension RFC_791.IPv4.Address.Class: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .classA: return "Class A"
-        case .classB: return "Class B"
-        case .classC: return "Class C"
-        case .classD: return "Class D (Multicast)"
-        case .classE: return "Class E (Reserved)"
+        case .a: return "Class A"
+        case .b: return "Class B"
+        case .c: return "Class C"
+        case .d: return "Class D (Multicast)"
+        case .e: return "Class E (Reserved)"
         }
     }
 }

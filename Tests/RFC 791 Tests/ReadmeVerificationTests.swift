@@ -28,7 +28,7 @@ struct ReadmeVerificationTests {
         // Create an IPv4 address from dotted-decimal notation
         let address: RFC_791.IPv4.Address = "192.168.1.1"
         #expect(address.octets == (192, 168, 1, 1))
-        #expect(address.addressClass == .classC)
+        #expect(address.class == .c)
     }
 
     @Test("Quick Start - Header fields")
@@ -90,9 +90,9 @@ struct ReadmeVerificationTests {
         let addr: RFC_791.IPv4.Address = "10.0.0.1"
 
         // Address classification (RFC 791 Section 3.2)
-        #expect(addr.addressClass == .classA)  // 10.x.x.x
-        #expect(addr.isMulticast == false)
-        #expect(addr.isReserved == false)
+        #expect(addr.class == .a)  // 10.x.x.x
+        #expect(addr.is.multicast == false)
+        #expect(addr.is.reserved == false)
     }
 
     @Test("IPv4 Addresses - Special addresses")

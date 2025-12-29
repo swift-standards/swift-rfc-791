@@ -43,7 +43,7 @@ struct IPv4AddressTests {
 
     @Test("IPv4 Address from string - valid")
     func initFromStringValid() throws {
-        let address = try RFC_791.IPv4.Address("192.168.1.1")
+        let address: RFC_791.IPv4.Address = try .init("192.168.1.1")
 
         #expect(address.octets.0 == 192)
         #expect(address.octets.1 == 168)
@@ -54,15 +54,15 @@ struct IPv4AddressTests {
     @Test("IPv4 Address from string - edge cases")
     func initFromStringEdgeCases() throws {
         // All zeros
-        let zeros = try RFC_791.IPv4.Address("0.0.0.0")
+        let zeros: RFC_791.IPv4.Address = try .init("0.0.0.0")
         #expect(zeros.rawValue == 0)
 
         // All 255s
-        let broadcast = try RFC_791.IPv4.Address("255.255.255.255")
+        let broadcast: RFC_791.IPv4.Address = try .init("255.255.255.255")
         #expect(broadcast.rawValue == 0xFFFF_FFFF)
 
         // Localhost
-        let localhost = try RFC_791.IPv4.Address("127.0.0.1")
+        let localhost: RFC_791.IPv4.Address = try .init("127.0.0.1")
         #expect(localhost.octets.0 == 127)
         #expect(localhost.octets.3 == 1)
     }
@@ -71,17 +71,17 @@ struct IPv4AddressTests {
     func initFromStringInvalidFormat() throws {
         let invalid1 = "192.168.1"
         #expect(throws: RFC_791.IPv4.Address.Error.self) {
-            _ = try RFC_791.IPv4.Address(invalid1)
+            let _: RFC_791.IPv4.Address = try .init(invalid1)
         }
 
         let invalid2 = "192.168.1.1.1"
         #expect(throws: RFC_791.IPv4.Address.Error.self) {
-            _ = try RFC_791.IPv4.Address(invalid2)
+            let _: RFC_791.IPv4.Address = try .init(invalid2)
         }
 
         let invalid3 = "not.an.ip.address"
         #expect(throws: RFC_791.IPv4.Address.Error.self) {
-            _ = try RFC_791.IPv4.Address(invalid3)
+            let _: RFC_791.IPv4.Address = try .init(invalid3)
         }
     }
 
@@ -89,17 +89,17 @@ struct IPv4AddressTests {
     func initFromStringOutOfRange() throws {
         let outOfRange1 = "256.0.0.1"
         #expect(throws: RFC_791.IPv4.Address.Error.self) {
-            _ = try RFC_791.IPv4.Address(outOfRange1)
+            let _: RFC_791.IPv4.Address = try .init(outOfRange1)
         }
 
         let outOfRange2 = "192.168.1.300"
         #expect(throws: RFC_791.IPv4.Address.Error.self) {
-            _ = try RFC_791.IPv4.Address(outOfRange2)
+            let _: RFC_791.IPv4.Address = try .init(outOfRange2)
         }
 
         let outOfRange3 = "-1.0.0.1"
         #expect(throws: RFC_791.IPv4.Address.Error.self) {
-            _ = try RFC_791.IPv4.Address(outOfRange3)
+            let _: RFC_791.IPv4.Address = try .init(outOfRange3)
         }
     }
 
@@ -126,7 +126,7 @@ struct IPv4AddressTests {
     @Test("IPv4 Address round-trip through string")
     func roundTripString() throws {
         let original = "192.168.1.1"
-        let address = try RFC_791.IPv4.Address(original)
+        let address: RFC_791.IPv4.Address = try .init(original)
         let serialized = address.description
 
         #expect(serialized == original)
